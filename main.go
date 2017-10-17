@@ -4,6 +4,7 @@ import "fmt"
 import "os"
 import "os/exec"
 import "flag"
+import "strings"
 
 func validateFlags(firstCommitPtr, lastCommitPtr *string) bool {
     valid := true
@@ -29,6 +30,16 @@ func validateFlags(firstCommitPtr, lastCommitPtr *string) bool {
     }
 
     return valid
+}
+
+func isHead(lastCommitPtr *string) bool {
+
+    checkGitCmd := exec.Command("git", "--version")
+    if _, err := checkGitCmd.Output(); err != nil {
+        fmt.Println("It appears that git cant be found in %PATH%.")
+        os.Exit(1)
+    }
+
 }
 
 func main() {
@@ -61,6 +72,8 @@ func main() {
     // Check the current HEAD is equal to last
     // git rev-parse HEAD returns full 40 char hash, if the length of firstCommitPtr
     // is less than 40, check that it is equal from left to right.
+
+
 
     fmt.Println("first:", *firstCommitPtr)
     fmt.Println("last:", *lastCommitPtr)
