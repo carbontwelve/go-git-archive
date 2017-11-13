@@ -21,22 +21,22 @@ func handleError(err error) bool {
 func validateFlags(firstCommitPtr, lastCommitPtr *string) bool {
 	valid := true
 
-	if (len(*firstCommitPtr) == 0) {
+	if len(*firstCommitPtr) == 0 {
 		fmt.Println("Please provide a git commit to begin at via the -first flag.")
 		valid = false
 	}
 
-	if (len(*firstCommitPtr) > 40) {
+	if len(*firstCommitPtr) > 40 {
 		fmt.Println("The hash for -first is not valid.")
 		valid = false
 	}
 
-	if (len(*lastCommitPtr) == 0) {
+	if len(*lastCommitPtr) == 0 {
 		fmt.Println("Please provide a git commit to end at via the -last flag.")
 		valid = false
 	}
 
-	if (len(*lastCommitPtr) > 40) {
+	if len(*lastCommitPtr) > 40 {
 		fmt.Println("The hash for -last is not valid.")
 		valid = false
 	}
