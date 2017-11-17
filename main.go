@@ -1,3 +1,7 @@
+// Copyright 2017 Simon Dann. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package main
 
 import "fmt"
@@ -26,12 +30,11 @@ func handleError(err error) bool {
 //
 func getGitHead() (string, error) {
 	gitHead := exec.Command("git", "rev-parse", "HEAD")
-
-	if gitHeadOutput, err := gitHead.Output(); err != nil {
+	gitHeadOutput, err := gitHead.Output()
+	if err != nil {
 		return "", errors.New("It appears that git cant be found in %PATH%")
-	} else {
-		return strings.TrimSpace(string(gitHeadOutput)), nil
 	}
+	return strings.TrimSpace(string(gitHeadOutput)), nil
 }
 
 func validateFlags(firstCommitPtr, lastCommitPtr *string) bool {
@@ -63,7 +66,7 @@ func validateFlags(firstCommitPtr, lastCommitPtr *string) bool {
 //
 // @link https://golangcode.com/create-zip-files-in-go/
 //
-func ZipFiles(filename string, baseDir string, files []string) error {
+func zipFilesList(filename string, baseDir string, files []string) error {
 	newFile, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -108,13 +111,13 @@ func ZipFiles(filename string, baseDir string, files []string) error {
 			continue
 		}
 
-		zipfile, err := os.Open(file)
+		zipFile, err := os.Open(file)
 		if err != nil {
 			return err
 		}
-		defer zipfile.Close()
+		defer zipFile.Close()
 
-		_, err = io.Copy(writer, zipfile)
+		_, err = io.Copy(writer, zipFile)
 		if err != nil {
 			return err
 		}
@@ -160,7 +163,7 @@ func zipChanges(changes string, beVerbose bool) {
 		}
 
 		if len(files) > 0 {
-			err := ZipFiles("build.zip", cwd, files)
+			err := zipFilesList("build.zip", cwd, files)
 			if err != nil {
 				handleError(err)
 			}
