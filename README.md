@@ -18,6 +18,9 @@ Usage of git-archive.exe:
   -v    Toggle verbose output.
 ```
 
+## Reasoning
+I have been slowly learning Go as a hobby for the past few months, usually in blocks of an hour a month and have been working on small projects that I can easily get finished. This is one such project and it solves a problem I have at work where we often need to upload just the files changed between commit versions as a zip to an FTP endpoint.
+
 ## License
 
 Distributed under MIT License, please see [license](LICENSE) file in code for more details.
