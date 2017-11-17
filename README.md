@@ -1,4 +1,4 @@
-# Go Git Archive
+# Go Git Archive [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Helpful%20command%20line%20tool%20for%20zipping%20up%20changes%20between%20two%20commits%20in%20git.&url=https://github.com/photogabble/go-git-archive&via=github&hashtags=golang,developers)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/photogabble/go-git-archive)](https://goreportcard.com/report/github.com/photogabble/go-git-archive)
 
