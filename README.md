@@ -1,5 +1,7 @@
 # Go Git Archive
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/photogabble/go-git-archive)](https://goreportcard.com/report/github.com/photogabble/go-git-archive)
+
 A small command line tool for zipping all files changed between two git commits.
 
 ## Usage
