@@ -17,3 +17,7 @@ Usage of git-archive.exe:
         List files rather than write to zip.
   -v    Toggle verbose output.
 ```
+
+## License
+
+Distributed under MIT License, please see [license](LICENSE) file in code for more details.
