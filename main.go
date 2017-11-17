@@ -4,12 +4,12 @@ import "fmt"
 import "os"
 import "os/exec"
 import (
-	"flag"
-	"strings"
-	"errors"
 	"archive/zip"
+	"errors"
+	"flag"
 	"io"
 	"path/filepath"
+	"strings"
 )
 
 func handleError(err error) bool {
@@ -132,7 +132,7 @@ func sliceContains(s []string, e string) bool {
 }
 
 func zipChanges(changes string, beVerbose bool) {
-	slice := strings.Split(changes,"\n")
+	slice := strings.Split(changes, "\n")
 	if cwd, err := os.Getwd(); err != nil {
 		handleError(err)
 	} else {
@@ -144,8 +144,8 @@ func zipChanges(changes string, beVerbose bool) {
 				file := filepath.Join(cwd, v)
 
 				// Add the folder before adding the file, if the folder hasn't already been added
-				fileDir := filepath.Dir(file);
-				if (!sliceContains(files, fileDir) && fileDir != cwd){
+				fileDir := filepath.Dir(file)
+				if !sliceContains(files, fileDir) && fileDir != cwd {
 					files = append(files, fileDir)
 					if beVerbose {
 						fmt.Println("Adding Directory: [" + fileDir + "]")
@@ -204,7 +204,7 @@ func main() {
 	}
 
 	// Check the current HEAD is equal to last
-	if ! strings.HasPrefix(defaultLastCommitHash, *lastCommitPtr) {
+	if !strings.HasPrefix(defaultLastCommitHash, *lastCommitPtr) {
 		handleError(errors.New("You need to checkout commit [" + *lastCommitPtr + "] before continuing."))
 	}
 
