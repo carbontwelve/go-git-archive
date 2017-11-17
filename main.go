@@ -9,6 +9,7 @@ import (
 	"errors"
 	"archive/zip"
 	"io"
+	"path/filepath"
 )
 
 func handleError(err error) bool {
@@ -62,28 +63,20 @@ func validateFlags(firstCommitPtr, lastCommitPtr *string) bool {
 //
 // @link https://golangcode.com/create-zip-files-in-go/
 //
-func ZipFiles(filename string, files []string) error {
-
-	newfile, err := os.Create(filename)
+func ZipFiles(filename string, baseDir string, files []string) error {
+	newFile, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
-	defer newfile.Close()
+	defer newFile.Close()
 
-	zipWriter := zip.NewWriter(newfile)
+	zipWriter := zip.NewWriter(newFile)
 	defer zipWriter.Close()
 
 	// Add files to zip
 	for _, file := range files {
-
-		zipfile, err := os.Open(file)
-		if err != nil {
-			return err
-		}
-		defer zipfile.Close()
-
 		// Get the file information
-		info, err := zipfile.Stat()
+		info, err := os.Stat(file)
 		if err != nil {
 			return err
 		}
@@ -93,20 +86,49 @@ func ZipFiles(filename string, files []string) error {
 			return err
 		}
 
-		// Change to deflate to gain better compression
-		// see http://golang.org/pkg/archive/zip/#pkg-constants
-		header.Method = zip.Deflate
+		header.Name = strings.TrimPrefix(file, baseDir)
+		if strings.HasPrefix(header.Name, string(os.PathSeparator)) {
+			header.Name = strings.TrimPrefix(header.Name, string(os.PathSeparator))
+		}
+
+		if info.IsDir() {
+			header.Name += string(os.PathSeparator)
+		} else {
+			// Change to deflate to gain better compression
+			// see http://golang.org/pkg/archive/zip/#pkg-constants
+			header.Method = zip.Deflate
+		}
 
 		writer, err := zipWriter.CreateHeader(header)
 		if err != nil {
 			return err
 		}
+
+		if info.IsDir() {
+			continue
+		}
+
+		zipfile, err := os.Open(file)
+		if err != nil {
+			return err
+		}
+		defer zipfile.Close()
+
 		_, err = io.Copy(writer, zipfile)
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func sliceContains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
 
 func zipChanges(changes string, beVerbose bool) {
@@ -119,16 +141,26 @@ func zipChanges(changes string, beVerbose bool) {
 
 		for _, v := range slice {
 			if len(v) > 0 {
-				if beVerbose {
-					fmt.Println("Adding: [" + cwd + string(os.PathSeparator) + v + "]")
+				file := filepath.Join(cwd, v)
+
+				// Add the folder before adding the file, if the folder hasn't already been added
+				fileDir := filepath.Dir(file);
+				if (!sliceContains(files, fileDir) && fileDir != cwd){
+					files = append(files, fileDir)
+					if beVerbose {
+						fmt.Println("Adding Directory: [" + fileDir + "]")
+					}
 				}
 
-				files = append(files, cwd + string(os.PathSeparator) + v)
+				if beVerbose {
+					fmt.Println("Adding File: [" + file + "]")
+				}
+				files = append(files, file)
 			}
 		}
 
 		if len(files) > 0 {
-			err := ZipFiles("build.zip", files)
+			err := ZipFiles("build.zip", cwd, files)
 			if err != nil {
 				handleError(err)
 			}
@@ -185,10 +217,11 @@ func main() {
 		fmt.Println("Executing: [" + gitCommand + "]")
 	}
 
+	// strings.Fields splits the string into a slice by spaces
 	// https://golang.org/pkg/strings/#Fields
 	command := strings.Fields(gitCommand)
 	if len(command) < 2 {
-		// @todo something with error? - this should never happen
+		handleError(errors.New("unexpected error with gitCommand"))
 	}
 	gitDiffTreeCommand := exec.Command(command[0], command[1:]...)
 	if gitDiffTree, err := gitDiffTreeCommand.Output(); err != nil {
