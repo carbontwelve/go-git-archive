@@ -14,4 +14,4 @@ Usage of git-archive.exe:
   -list
         List files rather than write to zip.
   -v    Toggle verbose output.
-``` 
+```
